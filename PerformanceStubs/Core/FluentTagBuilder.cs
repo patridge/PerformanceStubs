@@ -7,11 +7,16 @@
     public class FluentTagBuilder : TagBuilder {
         public TagRenderMode RenderMode { get; set; }
         public IList<FluentTagBuilder> ChildTags { get; set; }
-        public FluentTagBuilder(string tagName) : this(tagName, null) { }
-        public FluentTagBuilder(string tagName, params FluentTagBuilder[] childTags) : base(tagName) {
-            this.ChildTags = childTags ?? new List<FluentTagBuilder>().ToArray();
+        public FluentTagBuilder(string tagName, string withText, params FluentTagBuilder[] childTags)
+            : base(tagName) {
+            if (withText != null) {
+                this.InnerText = withText;
+            }
+            this.ChildTags = new List<FluentTagBuilder>(childTags ?? new FluentTagBuilder[] { });
             this.RenderMode = TagRenderMode.Normal;
         }
+        public FluentTagBuilder(string tagName, params FluentTagBuilder[] childTags) : this(tagName, null, childTags) { }
+        public FluentTagBuilder(string tagName) : this(tagName, (string)null) { }
 
         public FluentTagBuilder WithAttribute(string key, string value) {
             MergeAttribute(key, value);
@@ -35,9 +40,12 @@
             ChildTags.Add(childTag);
             return this;
         }
+        public FluentTagBuilder AddChild(string tagName, string text, params FluentTagBuilder[] childTags) {
+            FluentTagBuilder childTag = new FluentTagBuilder(tagName, text, childTags);
+            return AddChild(childTag);
+        }
         public FluentTagBuilder AddChild(string tagName, params FluentTagBuilder[] childTags) {
-            ChildTags.Add(new FluentTagBuilder(tagName, childTags));
-            return this;
+            return AddChild(tagName, null, childTags);
         }
 
         public override string ToString() {
