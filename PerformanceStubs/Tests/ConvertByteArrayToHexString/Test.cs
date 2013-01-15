@@ -15,7 +15,7 @@
         }
         protected override string Caption {
             get {
-                return "Text (n=" + this.Input1.Count().ToString("0,0") + " bytes), 150 iterations.";
+                return string.Format("Text (n={0:0,0} bytes), {1} iterations.", Input1.Count(), Iterations);
             }
         }
         protected override List<Func<byte[], string>> TestCandidates {
@@ -29,6 +29,7 @@
                     ByteArrayToHexStringViaStringBuilderForEachByteToString,
                     ByteArrayToHexStringViaStringBuilderForEachAppendFormat,
                     ByteArrayToHexViaByteManipulation,
+                    ByteArrayToHexViaByteManipulation2,
                     ByteArrayToHexViaSoapHexBinary
                 }).ToList();
             }
@@ -72,6 +73,17 @@
             }
             return new string(c);
         }
+        static string ByteArrayToHexViaByteManipulation2(byte[] bytes) {
+            char[] c = new char[bytes.Length * 2];
+            int b;
+            for (int i = 0; i < bytes.Length; i++) {
+                b = bytes[i] >> 4;
+                c[i * 2] = (char)(55 + b + (((b - 10) >> 31) & -7));
+                b = bytes[i] & 0xF;
+                c[i * 2 + 1] = (char)(55 + b + (((b - 10) >> 31) & -7));
+            }
+            return new string(c);
+        }
         static string ByteArrayToHexViaSoapHexBinary(byte[] bytes) {
             SoapHexBinary soapHexBinary = new SoapHexBinary(bytes);
             return soapHexBinary.ToString();
@@ -100,7 +112,7 @@
         }
         protected override long Iterations {
             get {
-                return 150;
+                return 1000;
             }
         }
         protected override bool OutputComparer(string left, string right) {

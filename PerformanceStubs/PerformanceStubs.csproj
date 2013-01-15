@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FastMember, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\FastMember.1.0.0.9\lib\net40\FastMember.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
@@ -57,23 +61,30 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\IPerformanceTest.cs" />
     <Compile Include="Tests\ConvertByteArrayToHexString\Test.cs" />
+    <Compile Include="Tests\GettingObjectPropertiesByName\Something.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\GettingObjectPropertiesByName\Test.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Tests\ListFirstSubtypeItem\Something.cs" />
     <Compile Include="Tests\ListFirstSubtypeItem\SubSomething.cs" />
     <Compile Include="Tests\ListFirstSubtypeItem\Test.cs" />
-    <Compile Include="Tests\ListSubsetCasting\SubSomething.cs" />
     <Compile Include="Tests\ListSubsetCasting\Something.cs" />
+    <Compile Include="Tests\ListSubsetCasting\SubSomething.cs" />
     <Compile Include="Tests\ListSubsetCasting\Test.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Tests\ConvertByteArrayToHexString\SmallText.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Tests\ConvertByteArrayToHexString\LargeText.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
+    <Content Include="Tests\ConvertByteArrayToHexString\SmallText.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,12 +1,12 @@
 ﻿namespace PerformanceStubs {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Management;
     using System.Reflection;
     using System.Text;
     using PerformanceStubs.Core;
-    using System.IO;
-    using System.Management;
 
     class Program {
         static void Main(string[] args) {
@@ -38,16 +38,20 @@
             }
             List<FluentTagBuilder> resultHtmlContent = new List<FluentTagBuilder>() { systemDetails };
             foreach (PerformanceTestSummary testSummary in testSummaries) {
-                FluentTagBuilder table = new FluentTagBuilder("table").AddChild("caption", testSummary.Caption)
+                FluentTagBuilder table = new FluentTagBuilder("table").AddChild("caption", string.Format("\"{0}\" ({1})", testSummary.Title, testSummary.Caption))
                                                                       .AddChild("tr", new[] { new FluentTagBuilder("th", "Average"),
-                                                                                              new FluentTagBuilder("th", "Method") });
+                                                                                              new FluentTagBuilder("th", "Method"),
+                                                                                              new FluentTagBuilder("th", "Ratio") });
                 Console.WriteLine("--------------------");
                 Console.WriteLine(testSummary.Title);
                 Console.WriteLine("--------------------");
+                double worstAverage = testSummary.Results.Max(result => result.ElapsedTicksCollection.Average());
                 foreach (Tuple<PerformanceTestCandidateResult, double> resultAndAverage in testSummary.Results.Select(result => new Tuple<PerformanceTestCandidateResult, double>(result, result.ElapsedTicksCollection.Average())).OrderBy(tuple => tuple.Item2)) {
+                    string ratio = string.Format("{0:0.0}X", worstAverage / resultAndAverage.Item2);
                     table.AddChild("tr", new[] { new FluentTagBuilder("td", string.Format("{0} ticks", resultAndAverage.Item2.ToString("N"))),
-                                                 new FluentTagBuilder("td", resultAndAverage.Item1.Title) });
-                    Console.WriteLine("{0}: {1} average ticks (over {2} runs)", resultAndAverage.Item1.Title, resultAndAverage.Item2.ToString("N"), testSummary.Iterations);
+                                                 new FluentTagBuilder("td", resultAndAverage.Item1.Title),
+                                                 new FluentTagBuilder("td", ratio) });
+                    Console.WriteLine("{0}: {1} average ticks (over {2} runs), {3}", resultAndAverage.Item1.Title, resultAndAverage.Item2.ToString("N"), testSummary.Iterations, ratio);
                 }
                 resultHtmlContent.Add(table);
             }

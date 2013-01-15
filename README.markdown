@@ -1,64 +1,48 @@
 #Performance Stubs
 
-I'm starting a series of blog posts around identifing the fastest method for accomplishing a particular goal. They can be found on my blog under the ["performance stub" tag](http://www.patridgedev.com/tag/performance-stub/). This is the repository where I will collect all of the test code along with the framework I used to run the tests.
+For a while, I was writing blog posts around identifing the fastest method for accomplishing particular goals. They can be found on my blog under the ["performance stub" tag](http://www.patridgedev.com/tag/performance-stub/). This is the repository where I will collect all of the test code along with the framework I used to run the tests.
 
 ##Background
 
 As I code, I like to make some light notes of alternatives while driving forward with the first implementation that makes it from my brain to my fingers. When I get the chance, I can go back and flesh out the two versions and drop them into some basic Stopwatch timing to determine which is better in terms of raw speed. Factoring those results with clarity of code, I have a method I will likely choose the next time I need the same feature.
 
+##Disclaimer
+
+Don't take these test results as any end-all answer. These are the numbers I got on some random computer I was using at the time. Feel free to use them as a starting point. If you are really digging into performance, you already know that everything can change once you put the code in question in its natural surroundings (e.g., Windows .NET vs. MonoTouch) or put it under load.
+
+###Last Run
+
+<div><ul><li>AMD Phenom(tm) 9750 Quad-Core Processor<ul><li>Cores: 4</li><li>Current Clock Speed: 2400</li><li>Max Clock Speed: 2400</li></ul></li></ul></div>
+
 ##Tests (so far)
 
-###Getting all subtype items from a list
+###Getting object properties by name at runtime (concrete type)
 
-<table><caption>For n=1,000,000 (half subtype) and 1,000 iterations.</caption><tr><th>Average</th><th>Method</th></tr></tr><td>0.41 ticks</td><td>SelectAsWhereNotNull</td></tr><tr><td>1.83 ticks</td><td>WhereIsCast</td></tr></table>
+<table><caption>&quot;Getting object properties by name at runtime (concrete type)&quot; (For 100000 iterations.)</caption><tr><th>Average</th><th>Method</th><th>Ratio</th></tr><tr><td>1.18 ticks</td><td>ObjectAccessorLookup</td><td>12.8X</td></tr><tr><td>15.04 ticks</td><td>IDictionaryRouteValueDictionaryLookup</td><td>1.0X</td></tr></table>
+
+###Getting object properties by name at runtime (dynamic ExpandoObject)
+
+<table><caption>&quot;Getting object properties by name at runtime (dynamic ExpandoObject)&quot; (For 100000 iterations.)</caption><tr><th>Average</th><th>Method</th><th>Ratio</th></tr><tr><td>0.77 ticks</td><td>IDictionaryRouteValueDictionaryLookup</td><td>2.3X</td></tr><tr><td>1.79 ticks</td><td>ObjectAccessorLookup</td><td>1.0X</td></tr></table>
+
+###Getting object properties by name at runtime (anonymous type)
+
+<table><caption>&quot;Getting object properties by name at runtime (anonymous type)&quot; (For 100000 iterations.)</caption><tr><th>Average</th><th>Method</th><th>Ratio</th></tr><tr><td>1.51 ticks</td><td>ObjectAccessorLookup</td><td>11.7X</td></tr><tr><td>17.65 ticks</td><td>IDictionaryRouteValueDictionaryLookup</td><td>1.0X</td></tr></table>
 
 ###Getting first subtype item from a list
 
-<table><caption>For n=1,000,000 (first subtype at 999,900) and 1,000 iterations.</caption><tr><th>Average</th><th>Method</th></tr></tr><td>63,307.67 ticks</td><td>FirstOrDefaultAs</td></tr><tr><td>104,421.76 ticks</td><td>SelectAsWhereNotNullFirstOrDefault</td></tr></table>
+<table><caption>&quot;Getting first subtype item from a list&quot; (For n=1,000,000 (first subtype at 999,900), 100 iterations.)</caption><tr><th>Average</th><th>Method</th><th>Ratio</th></tr><tr><td>74,929.18 ticks</td><td>FirstOrDefaultAs</td><td>1.8X</td></tr><tr><td>135,752.02 ticks</td><td>SelectAsWhereNotNullFirstOrDefault</td><td>1.0X</td></tr></table>
+
+###Getting all subtype items from a list
+
+<table><caption>&quot;Getting all subtype items from a list&quot; (For n=1,000,000 (half items are subtype), 1000 iterations.)</caption><tr><th>Average</th><th>Method</th><th>Ratio</th></tr><tr><td>0.90 ticks</td><td>SelectAsWhereNotNull</td><td>1.9X</td></tr><tr><td>1.70 ticks</td><td>WhereIsCast</td><td>1.0X</td></tr></table>
 
 ###Converting a byte array to a hexadecimal string
 
-I ran each of the various conversion methods through some crude `Stopwatch` performance testing, a run with a random sentence (n=98, 1000 iterations) and a run with a Project Gutenburg text (n=1,189,578, 150 iterations). Here are the results, roughly from fastest to slowest. All measurements are in ticks ([10,000 ticks = 1 ms](http://msdn.microsoft.com/en-us/library/system.timespan.tickspermillisecond.aspx)) and all relative notes are compared to the [slowest] `StringBuilder` implementation.
+<table><caption>Text (n=1,238,957 bytes), 150 iterations.</caption><tr><th>Average</th><th>Method</th><th>Ratio</th></tr><tr><td>56,286.27 ticks</td><td>ByteArrayToHexViaByteManipulation2</td><td>22.4X</td></tr><tr><td>91,113.89 ticks</td><td>ByteArrayToHexViaByteManipulation</td><td>13.8X</td></tr><tr><td>163,516.47 ticks</td><td>ByteArrayToHexStringViaBitConverter</td><td>7.7X</td></tr><tr><td>342,291.12 ticks</td><td>ByteArrayToHexViaSoapHexBinary</td><td>3.7X</td></tr><tr><td>422,203.16 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachByteToString</td><td>3.0X</td></tr><tr><td>470,619.16 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateByteToString</td><td>2.7X</td></tr><tr><td>932,242.66 ticks</td><td>ByteArrayToHexStringViaStringJoinArrayConvertAll</td><td>1.4X</td></tr><tr><td>945,120.53 ticks</td><td>ByteArrayToHexStringViaStringConcatArrayConvertAll</td><td>1.3X</td></tr><tr><td>1,174,170.17 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachAppendFormat</td><td>1.1X</td></tr><tr><td>1,258,624.65 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateAppendFormat</td><td>1.0X</td></tr></table>
 
-<table><caption>Text (n=1,238,957 bytes), 150 iterations.</caption><tr><th>Average</th><th>Method</th></tr></tr><td>46,890.06 ticks</td><td>ByteArrayToHexViaByteManipulation</td></tr><tr><td>101,423.99 ticks</td><td>ByteArrayToHexStringViaBitConverter</td></tr><tr><td>215,539.02 ticks</td><td>ByteArrayToHexViaSoapHexBinary</td></tr><tr><td>245,618.19 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachByteToString</td></tr><tr><td>302,274.76 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateByteToString</td></tr><tr><td>565,503.04 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachAppendFormat</td></tr><tr><td>581,972.65 ticks</td><td>ByteArrayToHexStringViaStringJoinArrayConvertAll</td></tr><tr><td>591,382.22 ticks</td><td>ByteArrayToHexStringViaStringConcatArrayConvertAll</td></tr><tr><td>621,137.07 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateAppendFormat</td></tr></table>
+<table><caption>Text (n=61 bytes), 1000 iterations.</caption><tr><th>Average</th><th>Method</th><th>Ratio</th></tr><tr><td>4.06 ticks</td><td>ByteArrayToHexViaByteManipulation2</td><td>14.9X</td></tr><tr><td>4.68 ticks</td><td>ByteArrayToHexViaByteManipulation</td><td>12.9X</td></tr><tr><td>9.53 ticks</td><td>ByteArrayToHexStringViaBitConverter</td><td>6.3X</td></tr><tr><td>18.29 ticks</td><td>ByteArrayToHexViaSoapHexBinary</td><td>3.3X</td></tr><tr><td>21.29 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachByteToString</td><td>2.8X</td></tr><tr><td>23.69 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateByteToString</td><td>2.5X</td></tr><tr><td>25.62 ticks</td><td>ByteArrayToHexStringViaStringConcatArrayConvertAll</td><td>2.4X</td></tr><tr><td>27.92 ticks</td><td>ByteArrayToHexStringViaStringJoinArrayConvertAll</td><td>2.2X</td></tr><tr><td>55.42 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachAppendFormat</td><td>1.1X</td></tr><tr><td>60.38 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateAppendFormat</td><td>1.0X</td></tr></table>
 
-<table><caption>Text (n=61 bytes), 150 iterations.</caption><tr><th>Average</th><th>Method</th></tr></tr><td>2.21 ticks</td><td>ByteArrayToHexViaByteManipulation</td></tr><tr><td>6.37 ticks</td><td>ByteArrayToHexStringViaBitConverter</td></tr><tr><td>10.59 ticks</td><td>ByteArrayToHexViaSoapHexBinary</td></tr><tr><td>12.55 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachByteToString</td></tr><tr><td>15.30 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateByteToString</td></tr><tr><td>16.13 ticks</td><td>ByteArrayToHexStringViaStringJoinArrayConvertAll</td></tr><tr><td>16.56 ticks</td><td>ByteArrayToHexStringViaStringConcatArrayConvertAll</td></tr><tr><td>33.50 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateAppendFormat</td></tr><tr><td>380.50 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachAppendFormat</td></tr></table>
-
- - Byte Manipulation
-   - Text: 90,465 (12.06X faster)
-   - Sentence: 4.3 (14.16X faster)
- - `BitConverter`
-   - Text: 162,098 (6.73X faster)
-   - Sentence: 10 (6.09X faster)
- - `{SoapHexBinary}.ToString`
-   - Text: 338,721.1 (3.22X faster)
-   - Sentence: 18.2 (3.35X faster)
- - `{byte}.ToString("X2")` (using `foreach`)
-   - Text: 380,966 (2.86X faster)
-   - Sentence: 20.1 (3.03X faster)
- - `{byte}.ToString("X2")` (using `{IEnumerable}.Aggregate`, requires System.Linq)
-   - Text: 470,690 (2.32X faster)
-   - Sentence: 23.1 (2.64X faster)
- - `Array.ConvertAll` (using `string.Join`)
-   - Text: 952,553 (1.15X faster)
-   - Sentence: 31 (1.96X faster)
- - `Array.ConvertAll` (using `string.Concat`, requires .NET 4.0)
-   - Text: 974,442 (1.12X faster)
-   - Sentence: 24.7 (2.47X faster)
- - `{StringBuilder}.AppendFormat` (using `foreach`)
-   - Text: 999,868 (1.09X faster)
-   - Sentence: 53.2 (1.14X faster)
- - `{StringBuilder}.AppendFormat` (using `{IEnumerable}.Aggregate`, requires System.Linq)
-   - Text: 1,091,130 (1X)
-   - Sentence: 60.9 (1X)
-
-*NOTE: All tests on AMD Phenom 9750 2.40GHz.*
-
-Byte manipulation, while harder to read, is definitely the fastest approach. `BitConverter` is second, even with the `.Replace("-", "")` to match its output with the rest. `SoapHexBinary` took over the third place position when it was added, bumping the two `Array.ConvertAll` variants.
-
-##Disclaimer
-
-Don't take these test results as any end-all answer. These are the numbers I got on some random computer I was using at the time. Feel free to use them as a starting point. If you are really digging into performance, you already know that everything can change once you put the code in question in its natural surroundings or put it under load.
+Byte manipulation, while harder to read, is definitely the fastest approach, with the newest version added taking the lead quite significantly over the earlier version. `BitConverter` is second, even with the `.Replace("-", "")` to match its output with the rest. `SoapHexBinary` took over the third place position when it was added, bumping the two `Array.ConvertAll` variants.
 
 ##Contributions
 
@@ -66,4 +50,4 @@ If you find something wrong with this stuff or have recommendations for the test
 
 ##License
 
-MIT license. If you do something cool with it, though, I'd love to hear about it.
+[MIT license](http://opensource.org/licenses/MIT). If you do something cool with it, though, I'd love to hear about it.

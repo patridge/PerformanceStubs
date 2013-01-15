@@ -12,7 +12,7 @@
         }
         protected override string Caption {
             get {
-                return "For n=" + this.Input1.Count().ToString("00,0") + " (first subtype at 999,900) and 1,000 iterations.";
+                return string.Format("For n={0:0,0} (first subtype at 999,900), {1} iterations.", Input1.Count(), Iterations);
             }
         }
         protected override List<Func<IEnumerable<Something>, SubSomething>> TestCandidates {
