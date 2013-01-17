@@ -36,7 +36,7 @@ Don't take these test results as any end-all answer. These are the numbers I got
 
 <table><caption>&quot;Getting all subtype items from a list&quot; (For n=1,000,000 (half items are subtype), 1000 iterations.)</caption><tr><th>Average</th><th>Method</th><th>Ratio</th></tr><tr><td>0.90 ticks</td><td>SelectAsWhereNotNull</td><td>1.9X</td></tr><tr><td>1.70 ticks</td><td>WhereIsCast</td><td>1.0X</td></tr></table>
 
-###Converting a byte array to a hexadecimal string
+###[Converting a byte array to a hexadecimal string](http://stackoverflow.com/a/624379/48700)
 
 <table><caption>Text (n=1,238,957 bytes), 150 iterations.</caption><tr><th>Average</th><th>Method</th><th>Ratio</th></tr><tr><td>56,286.27 ticks</td><td>ByteArrayToHexViaByteManipulation2</td><td>22.4X</td></tr><tr><td>91,113.89 ticks</td><td>ByteArrayToHexViaByteManipulation</td><td>13.8X</td></tr><tr><td>163,516.47 ticks</td><td>ByteArrayToHexStringViaBitConverter</td><td>7.7X</td></tr><tr><td>342,291.12 ticks</td><td>ByteArrayToHexViaSoapHexBinary</td><td>3.7X</td></tr><tr><td>422,203.16 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachByteToString</td><td>3.0X</td></tr><tr><td>470,619.16 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateByteToString</td><td>2.7X</td></tr><tr><td>932,242.66 ticks</td><td>ByteArrayToHexStringViaStringJoinArrayConvertAll</td><td>1.4X</td></tr><tr><td>945,120.53 ticks</td><td>ByteArrayToHexStringViaStringConcatArrayConvertAll</td><td>1.3X</td></tr><tr><td>1,174,170.17 ticks</td><td>ByteArrayToHexStringViaStringBuilderForEachAppendFormat</td><td>1.1X</td></tr><tr><td>1,258,624.65 ticks</td><td>ByteArrayToHexStringViaStringBuilderAggregateAppendFormat</td><td>1.0X</td></tr></table>
 
