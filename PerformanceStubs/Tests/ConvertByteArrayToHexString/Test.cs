@@ -31,7 +31,7 @@
                     ByteArrayToHexViaByteManipulation,
                     ByteArrayToHexViaByteManipulation2,
                     ByteArrayToHexViaSoapHexBinary,
-                    ByteArrayToHexViaLookupAndByteManipulation,
+                    ByteArrayToHexViaLookupAndShift,
                     ByteArrayToHexViaLookup,
                 }).ToList();
             }
