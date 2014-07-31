@@ -33,6 +33,7 @@
                     ByteArrayToHexViaSoapHexBinary,
                     ByteArrayToHexViaLookupAndShift,
                     ByteArrayToHexViaLookup,
+                    ByteArrayToHexViaLookupPerByte,
                 }).ToList();
             }
         }
@@ -75,6 +76,9 @@
             }
             return new string(c);
         }
+        /// <summary>
+        /// Derived from http://stackoverflow.com/a/14333437/48700
+        /// </summary>
         static string ByteArrayToHexViaByteManipulation2(byte[] bytes) {
             char[] c = new char[bytes.Length * 2];
             int b;
@@ -98,6 +102,23 @@
                 result.Append(hexAlphabet[(int)(b & 0xF)]);
             }
             return result.ToString();
+        }
+        static uint[] _Lookup32 = Enumerable.Range(0, 255).Select(i => {
+            string s = i.ToString("X2");
+            return ((uint)s[0]) + ((uint)s[1] << 16);
+        }).ToArray();
+        /// <summary>
+        /// Derived from http://stackoverflow.com/a/24343727/48700
+        /// </summary>
+        static string ByteArrayToHexViaLookupPerByte(byte[] bytes) {
+            var result = new char[bytes.Length * 2];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                var val = _Lookup32[bytes[i]];
+                result[2*i] = (char)val;
+                result[2*i + 1] = (char) (val >> 16);
+            }
+            return new string(result);
         }
         static string ByteArrayToHexViaLookup(byte[] bytes) {
             string[] hexStringTable = new string[] {
