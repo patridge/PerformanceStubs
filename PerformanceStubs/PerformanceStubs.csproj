@@ -53,7 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\AssemblyExtensions.cs" />
-    <Compile Include="Core\FluentTagBuilder.cs" />
     <Compile Include="Core\IEnumerableExtensions.cs" />
     <Compile Include="Core\PerformanceTestOneInOneOut.cs" />
     <Compile Include="Core\PerformanceTestSummary.cs" />
