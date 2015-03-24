@@ -30,8 +30,9 @@ namespace PerformanceStubs {
             TestSuiteRunResults results = new TestSuiteRunResults();
 //            FluentTagBuilder systemDetails = new FluentTagBuilder("div");
             try {
-                // I don't know enough about WMI yet to trust this code running well outside my own machine. Omitting these details if we have any exceptions.
 //                FluentTagBuilder ul = new FluentTagBuilder("ul");
+                // I don't know enough about WMI yet to trust this code running well outside my own machine. Omitting these details if we have any exceptions.
+                // NOTE: Totally fails on Mono for totally expected reasons.
                 foreach (ManagementObject mo in new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor").Get()) {
                     // Gleaned mostly from a StackOverflow question: http://stackoverflow.com/a/2670568/48700.
                     results.SystemInfo.ProcessorName = mo["Name"].ToString();
