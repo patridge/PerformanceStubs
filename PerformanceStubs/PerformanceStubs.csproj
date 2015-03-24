@@ -42,7 +42,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,6 +50,7 @@
     <Reference Include="FastMember">
       <HintPath>..\packages\FastMember.1.0.0.11\lib\net40\FastMember.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\AssemblyExtensions.cs" />
@@ -74,6 +74,7 @@
     <Compile Include="Tests\ListSubsetCasting\Something.cs" />
     <Compile Include="Tests\ListSubsetCasting\SubSomething.cs" />
     <Compile Include="Tests\ListSubsetCasting\Test.cs" />
+    <Compile Include="Core\FluentTagBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
