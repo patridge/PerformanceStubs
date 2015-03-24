@@ -103,7 +103,7 @@
             }
             return result.ToString();
         }
-        static uint[] _Lookup32 = Enumerable.Range(0, 255).Select(i => {
+        static uint[] _Lookup32 = Enumerable.Range(0, 256).Select(i => {
             string s = i.ToString("X2");
             return ((uint)s[0]) + ((uint)s[1] << 16);
         }).ToArray();
