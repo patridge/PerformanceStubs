@@ -166,10 +166,10 @@
             return Encoding.ASCII.GetBytes("put any sample string you want to test here instead of a file");
         }
 
-        private static readonly byte[] input = GenerateTestInput();
+        private byte[] _Intput1 = null;
         protected override byte[] Input1 {
             get {
-                return input;
+                return _Intput1 ?? (_Intput1 = GenerateTestInput());
             }
         }
         protected override long Iterations {
