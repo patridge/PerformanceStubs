@@ -115,8 +115,7 @@
         /// </summary>
         static string ByteArrayToHexViaLookupPerByte(byte[] bytes) {
             var result = new char[bytes.Length * 2];
-            for (int i = 0; i < bytes.Length; i++)
-            {
+            for (int i = 0; i < bytes.Length; i++) {
                 var val = _Lookup32[bytes[i]];
                 result[2*i] = (char)val;
                 result[2*i + 1] = (char) (val >> 16);
@@ -135,16 +134,13 @@
         }
 
         static readonly uint* _lookup32UnsafeP = (uint*)GCHandle.Alloc(_Lookup32, GCHandleType.Pinned).AddrOfPinnedObject();
-        static string ByteArrayToHexViaLookup32UnsafeDirect(byte[] bytes)
-        {
+        static string ByteArrayToHexViaLookup32UnsafeDirect(byte[] bytes) {
             var lookupP = _lookup32UnsafeP;
             var result = new string((char)0, bytes.Length * 2);
             fixed (byte* bytesP = bytes)
-            fixed (char* resultP = result)
-            {
+            fixed (char* resultP = result) {
                 uint* resultP2 = (uint*)resultP;
-                for (int i = 0; i < bytes.Length; i++)
-                {
+                for (int i = 0; i < bytes.Length; i++) {
                     resultP2[i] = lookupP[bytesP[i]];
                 }
             }
