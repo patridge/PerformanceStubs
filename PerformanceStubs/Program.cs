@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management;
 using System.Reflection;
 using PerformanceStubs.Core;
@@ -73,8 +74,9 @@ namespace PerformanceStubs {
                 Console.WriteLine(testSummary.Title);
                 Console.WriteLine("--------------------");
                 double worstAverage = testSummary.WorstAverage;
-                foreach (var candidateResult in testSummary.Results) {
-                    string ratio = string.Format("{0:0.0}X", candidateResult.GetRatioOfWorst(worstAverage));
+                foreach (var candidateResultAndRatio in testSummary.Results.Select(result => new { Ratio = result.GetRatioOfWorst(worstAverage), Result = result }).OrderByDescending(resultAndRatio => resultAndRatio.Ratio)) {
+                    string ratio = string.Format("{0:0.0}X", candidateResultAndRatio.Ratio);
+                    var candidateResult = candidateResultAndRatio.Result;
                     table.AddChild("tr", new[] { new FluentTagBuilder("td", string.Format("{0} ticks", candidateResult.Average.ToString("N"))),
                                                  new FluentTagBuilder("td", candidateResult.Title),
                                                  new FluentTagBuilder("td", ratio) });
