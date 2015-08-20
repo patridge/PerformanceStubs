@@ -19,7 +19,10 @@
             get {
                 return (new Func<IEnumerable<Something>, SubSomething>[] {
                     FirstOrDefaultAs,
-                    SelectAsWhereNotNullFirstOrDefault
+                    SelectAsWhereNotNullFirstOrDefault,
+                    SelectAsFirstOrDefaultNotNull,
+                    OfTypeFirstOrDefault,
+                    SimpleLoop,
                 }).ToList();
             }
         }
@@ -28,6 +31,24 @@
         }
         public static SubSomething SelectAsWhereNotNullFirstOrDefault(IEnumerable<Something> source) {
             return source.Select(item => item as SubSomething).Where(item => item != null).FirstOrDefault();
+        }
+        public static SubSomething SelectAsFirstOrDefaultNotNull(IEnumerable<Something> source) {
+            return source.Select(item => item as SubSomething).FirstOrDefault(item => item != null);
+        }
+        public static SubSomething OfTypeFirstOrDefault(IEnumerable<Something> source) {
+            return source.OfType<SubSomething>().FirstOrDefault();
+        }
+        public static SubSomething SimpleLoop(IEnumerable<Something> source) {
+            foreach (Something val in source)
+            {
+                SubSomething subVal = val as SubSomething;
+                if (subVal != null)
+                {
+                    return subVal;
+                }
+            }
+
+            return null;
         }
 
         private static IEnumerable<Something> GenerateTestInput() {
@@ -44,7 +65,7 @@
         private IEnumerable<Something> _Intput1 = null;
         protected override IEnumerable<Something> Input1 {
             get {
-                return _Intput1 ?? (_Intput1 = GenerateTestInput());
+                return _Intput1 ?? (_Intput1 = GenerateTestInput().Skip(0));
             }
         }
         protected override long Iterations {

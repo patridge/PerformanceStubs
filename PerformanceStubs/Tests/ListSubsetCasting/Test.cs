@@ -19,15 +19,33 @@
             get {
                 return (new Func<IEnumerable<Something>, IEnumerable<SubSomething>>[] {
                     SelectAsWhereNotNull,
-                    WhereIsCast
+                    WhereIsCast,
+                    OfType,
+                    YieldReturnLoop,
                 }).ToList();
             }
         }
         public static IEnumerable<SubSomething> SelectAsWhereNotNull(IEnumerable<Something> source) {
-            return source.Select(item => item as SubSomething).Where(item => item != null);
+            return source.Select(item => item as SubSomething).Where(item => item != null).ToList();
         }
         public static IEnumerable<SubSomething> WhereIsCast(IEnumerable<Something> source) {
-            return source.Where(item => item is SubSomething).Cast<SubSomething>();
+            return source.Where(item => item is SubSomething).Cast<SubSomething>().ToList();
+        }
+        public static IEnumerable<SubSomething> OfType(IEnumerable<Something> source) {
+            return source.OfType<SubSomething>().ToList();
+        }
+        public static IEnumerable<SubSomething> YieldReturnLoop(IEnumerable<Something> source) {
+            return YieldReturnLoopCore(source).ToList();
+        }
+        private static IEnumerable<SubSomething> YieldReturnLoopCore(IEnumerable<Something> source) {
+            foreach (Something val in source)
+            {
+                SubSomething subVal = val as SubSomething;
+                if (subVal != null)
+                {
+                    yield return subVal;
+                }
+            }
         }
 
         private static IEnumerable<Something> GenerateTestInput() {
@@ -44,29 +62,16 @@
         private IEnumerable<Something> _Intput1 = null;
         protected override IEnumerable<Something> Input1 {
             get {
-                return _Intput1 ?? (_Intput1 = GenerateTestInput());
+                return _Intput1 ?? (_Intput1 = GenerateTestInput().Skip(0));
             }
         }
         protected override long Iterations {
             get {
-                return 1000;
+                return 100;
             }
         }
         protected override bool OutputComparer(IEnumerable<SubSomething> left, IEnumerable<SubSomething> right) {
-            int leftCount = left.Count();
-            if (leftCount != right.Count()) {
-                return false;
-            }
-
-            // RESEARCH: May be able to try default EqualityComparer for IEnumerable<SubSomething> directly.
-            SubSomething[] leftArray = left.ToArray();
-            SubSomething[] rightArray = right.ToArray();
-            for (int i = 0; i < leftCount; i++) {
-                if (!EqualityComparer<SubSomething>.Default.Equals(leftArray[i], rightArray[i])) {
-                    return false;
-                }
-            }
-            return true;
+            return left.SequenceEqual(right);
         }
     }
 }
